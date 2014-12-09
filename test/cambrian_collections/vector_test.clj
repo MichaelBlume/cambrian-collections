@@ -15,7 +15,7 @@
 (declare unrolled)
 
 (deftest test-vector-like
-  (check/assert-vector-like 1e4 (unrolled) gen/int))
+  (check/assert-vector-like 1e2 (unrolled) gen/int))
 
 #_(deftest test-print-dup
   (binding [*print-dup* true]
