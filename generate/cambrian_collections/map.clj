@@ -89,6 +89,9 @@
 
       (j/field '[private final] 'IPersistentMap 'meta)
 
+      (j/method '[public static] 'IPersistentMap 'create '[IPersistentMap m]
+        (j/return 'm))
+
       ;; public CardN(IPersistentMap meta, ...)
       (apply j/method nil nil classname
         (concat '[IPersistentMap meta] (interleave (cycle '[Object Object int]) fields))

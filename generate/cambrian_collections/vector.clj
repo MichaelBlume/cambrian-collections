@@ -238,6 +238,9 @@
       (j/method '[public] 'IPersistentMap 'meta []
         "return meta;")
 
+      (j/method '[public static] 'IPersistentVector 'create '[IPersistentVector v]
+        (j/return 'v))
+
       ;; public IObj withMeta(IPersistentMap meta)
       (j/method '[public] 'IObj 'withMeta '[IPersistentMap meta]
         "return new " (apply j/invoke classname 'meta fields) ";")
