@@ -468,7 +468,7 @@
       {:modifiers '[public]}
       'PersistentUnrolledVector
 
-      "static IPersistentVector EMPTY = new Card0();"
+      "public static IPersistentVector EMPTY = new Card0();"
 
       (->> (range (inc max-cardinality))
         (map

@@ -698,7 +698,7 @@
       {:modifiers '[public]}
       'PersistentUnrolledMap
 
-      "static IPersistentMap EMPTY = new Card0();"
+      "public static IPersistentMap EMPTY = new Card0();"
 
       "static Object NOT_FOUND = new Object();"
 
