@@ -74,7 +74,7 @@
         fields (interleave ks vs hs)]
     (j/class
       {:modifiers '[public static]
-       :implements '[IObj IEditableCollection IReduce]
+       :implements '[IObj IEditableCollection IReduce IEditableMap]
        :extends 'APersistentMap}
      classname
 
@@ -643,6 +643,18 @@
               (range)
               vs)
             [(j/return 'notFound)])))
+
+      (j/method '[] 'IMapEntry 'doEntryAt '[Object key]
+        "int h = Util.hasheq(key);"
+        "int idx = indexOf(h, key);"
+        (apply j/switch 'idx
+          (concat
+            (mapcat
+              (fn [idx k v]
+                [idx (j/return (str "new " (j/invoke 'MapEntry k v)))])
+              (range)
+              ks vs)
+            [(j/return 'null)])))
 
       (j/method '[] 'ITransientMap 'doWithout '[Object key]
         "int h = Util.hasheq(key);"
