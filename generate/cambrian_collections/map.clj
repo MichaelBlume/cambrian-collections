@@ -180,7 +180,7 @@
               (concat
                 (mapcat
                   (fn [idx k v]
-                    [idx (j/return (str "new MapEntry(" k "," v ")"))])
+                    [idx (j/return (str "new PersistentUnrolledVector.Card2(" k "," v ")"))])
                   (range)
                   ks
                   vs)
@@ -418,7 +418,7 @@
           "return f.invoke();"
 
           (= 1 cardinality)
-          (str "return new " (j/invoke 'MapEntry (first ks) (first vs)) ";")
+          (str "return " (j/invoke 'PersistentUnrolledVector.create (first ks) (first vs)) ";")
 
           :else
           (str
@@ -426,7 +426,7 @@
             (reduce-body
               (map
                 (fn [k v]
-                  (j/invoke 'f.invoke 'init (str "new " (j/invoke 'MapEntry k v))))
+                  (j/invoke 'f.invoke 'init (j/invoke 'PersistentUnrolledVector.create k v)))
                 (rest ks)
                 (rest vs)))
             "return init;")))
@@ -436,7 +436,7 @@
         (reduce-body
           (map
             (fn [k v]
-              (j/invoke 'f.invoke 'init (str "new " (j/invoke 'MapEntry k v))))
+              (j/invoke 'f.invoke 'init (j/invoke 'PersistentUnrolledVector.create k v)))
             ks vs))
         "return init;")
 
@@ -445,7 +445,7 @@
         'iterator
         cardinality
         (fn [k v]
-          (str "new " (j/invoke 'MapEntry k v)))
+          (j/invoke 'PersistentUnrolledVector.create k v))
         ks vs)
 
       ;; public Iterator keyIterator()
@@ -467,7 +467,7 @@
         (str/join ","
           (map
             (fn [k v]
-              (str "new MapEntry(" k "," v ")"))
+              (str "PersistentUnrolledVector.create(" k "," v ")"))
             ks
             vs))
         "};")
@@ -501,7 +501,7 @@
             (apply j/switch 'offset
               (mapcat
                 (fn [idx k v]
-                  [idx (j/return "new " (j/invoke 'MapEntry k v))])
+                  [idx (j/return (j/invoke 'PersistentUnrolledVector.create k v))])
                 (range)
                 ks
                 vs))
@@ -651,7 +651,7 @@
           (concat
             (mapcat
               (fn [idx k v]
-                [idx (j/return (str "new " (j/invoke 'MapEntry k v)))])
+                [idx (j/return (str "new " (j/invoke 'PersistentUnrolledVector.Card2 k v)))])
               (range)
               ks vs)
             [(j/return 'null)])))
