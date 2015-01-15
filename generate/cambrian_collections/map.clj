@@ -74,7 +74,7 @@
         fields (interleave ks vs hs)]
     (j/class
       {:modifiers '[public static]
-       :implements '[IObj IEditableCollection IReduce IEditableMap]
+       :implements '[IObj IEditableCollection IReduce IEditableMap IMapIterable]
        :extends 'APersistentMap}
      classname
 
