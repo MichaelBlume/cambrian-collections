@@ -22,7 +22,7 @@
       (map (comp gen/return keyword str char) (range (int \a) (int \z))))
     gen/int))
 
-#_(deftest test-print-dup
+(deftest test-print-dup
   (binding [*print-dup* true]
     (let [m (unrolled 1 2 3 4)]
       (= m (read-string (pr-str m))))))
