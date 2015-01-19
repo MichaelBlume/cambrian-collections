@@ -15,7 +15,7 @@
 (declare unrolled)
 
 (deftest test-map-like
-  (check/assert-map-like 1e2 (unrolled) gen/int gen/int)
+  (check/assert-map-like 1e2 (unrolled) check/with-meta-gen gen/int)
   #_(check/assert-map-like 1e2 (unrolled) gen/any gen/int)
   (check/assert-map-like 1e2 (unrolled)
     (gen/one-of (->> (range (int \a) (int \z))
