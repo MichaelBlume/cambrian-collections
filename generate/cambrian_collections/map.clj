@@ -449,6 +449,55 @@
 
       (when (pos? cardinality)
         (j/class
+          {:implements '[IChunk]}
+          'UnrolledChunk
+
+          "private final int offset;"
+          "private final int count;"
+
+          (j/method nil nil 'UnrolledChunk '[int offset]
+            "this.offset = offset;"
+            "this.count = " cardinality "-offset;")
+
+          (j/method '[public] 'int 'count []
+            (j/return 'count))
+
+          (j/method '[public] 'Object 'nth '[int n]
+            (apply j/switch "offset+n"
+              (mapcat
+                (fn [idx k v]
+                  [idx (j/return (j/invoke 'PersistentUnrolledVector.create k v))])
+                (range) ks vs))
+            "throw new IndexOutOfBoundsException();")
+
+          (j/method '[public] 'Object 'nth '[int n Object notFound]
+            (apply j/switch "offset+n"
+              (mapcat
+                (fn [idx k v]
+                  [idx (j/return (j/invoke 'PersistentUnrolledVector.create k v))])
+                (range) ks vs))
+            (j/return 'notFound))
+
+          (j/method '[public] 'IChunk 'dropFirst []
+            (j/cond (str "offset < " cardinality)
+              (j/return "new " (j/invoke 'UnrolledChunk "offset+1"))
+              "throw new IllegalStateException(\"dropFirst of empty chunk\");"))
+
+          (j/method '[public] 'Object 'reduce '[IFn f Object start]
+            (apply j/switch 'offset
+              (mapcat
+                (fn [idx k v]
+                  [idx (str
+                         "start ="
+                         (j/invoke 'f.invoke 'start (str "new " (j/invoke 'MapEntry k v)))
+                         ";"
+                         (j/cond (j/invoke 'RT.isReduced 'start)
+                                 (j/return 'start)))])
+                (range) ks vs))
+            (j/return 'start))))
+
+      (when (pos? cardinality)
+        (j/class
           {:extends 'ASeq
            :implements '[IChunkedSeq Counted]}
           'UnrolledChunkedSeq
@@ -461,7 +510,7 @@
             "this.meta = meta;")
 
           (j/method '[public] 'IChunk 'chunkedFirst []
-            "return new " (j/invoke 'ArrayChunk "toArray()" 0) ";")
+            "return new " (j/invoke 'UnrolledChunk 'offset) ";")
 
           (j/method '[public] 'ISeq 'chunkedNext []
             "return null;")

@@ -415,6 +415,45 @@
 
       (when (pos? cardinality)
         (j/class
+          {:implements '[IChunk]}
+          'UnrolledChunk
+
+          "private final int offset;"
+          "private final int count;"
+
+          (j/method nil nil 'UnrolledChunk '[int offset]
+            "this.offset = offset;"
+            "this.count = " cardinality "-offset;")
+
+          (j/method '[public] 'int 'count []
+            (j/return 'count))
+
+          (j/method '[public] 'Object 'nth '[int n]
+            (j/return (j/invoke (str classname ".this.nth") "n+offset")))
+
+          (j/method '[public] 'Object 'nth '[int n Object notFound]
+            (j/return (j/invoke (str classname ".this.nth") "n+offset" 'notFound)))
+
+          (j/method '[public] 'IChunk 'dropFirst []
+            (j/cond (str "offset < " cardinality)
+              (j/return "new " (j/invoke 'UnrolledChunk "offset+1"))
+              "throw new IllegalStateException(\"dropFirst of empty chunk\");"))
+
+          (j/method '[public] 'Object 'reduce '[IFn f Object start]
+            (apply j/switch 'offset
+              (mapcat
+                (fn [idx field]
+                  [idx (str
+                         "start ="
+                         (j/invoke 'f.invoke 'start field)
+                         ";"
+                         (j/cond (j/invoke 'RT.isReduced 'start)
+                                 (j/return 'start)))])
+                (range) fields))
+            (j/return 'start))))
+
+      (when (pos? cardinality)
+        (j/class
           {:extends 'ASeq
            :implements '[IChunkedSeq Counted]}
           'UnrolledChunkedSeq
@@ -427,7 +466,7 @@
             "this.meta = meta;")
 
           (j/method '[public] 'IChunk 'chunkedFirst []
-            "return new " (j/invoke 'ArrayChunk "toArray()" 0) ";")
+            "return new " (j/invoke 'UnrolledChunk 'offset) ";")
 
           (j/method '[public] 'ISeq 'chunkedNext []
             "return null;")
