@@ -18,11 +18,8 @@
   (check/assert-map-like 1e2 (unrolled) check/with-meta-gen gen/int)
   #_(check/assert-map-like 1e2 (unrolled) gen/any gen/int)
   (check/assert-map-like 1e2 (unrolled)
-    (gen/one-of (->> (range (int \a) (int \z))
-                  (map char)
-                  (map str)
-                  (map keyword)
-                  (map gen/return)))
+    (gen/one-of
+      (map (comp gen/return keyword str char) (range (int \a) (int \z))))
     gen/int))
 
 #_(deftest test-print-dup
